@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+   <head>
+	  <meta charset="utf8">
+	  <style>
+		 html {
+			font-family: Arial, Helvetica, sans-serif;
+		 }
+
+		 #pokemon-card {
+			background-color: #555555;
+			border-radius: 20px;
+			padding-bottom: 1%;
+			height: 30%;
+			width: 30%;
+		 }
+
+		 #change-pokemon {
+			background-color: #00aa44;
+			border-radius: 20px;
+			margin-top: 1.5%;
+			border: none;
+		 }
+
+		 #change-pokemon:hover {
+			background-color: #007711;
+		 }
+
+	  </style>
+   </head>
+   <body>
+	  
+	  <center>
+		 <img src="https://www.transparentpng.com/thumb/pokemon/JGyfIw-pokemon-logo-png.png" alt="pokemon logo png @transparentpng.com">
+		 <div id="pokemon-card">
+			<figure>
+			   <img>
+			   <figcaption></figcaption>
+			</figure>
+			<p></p>
+		 </div>
+
+		 <button id="change-pokemon"></button>
+	  </center>
+
+	  <script>
+
+		 /*
+		  * @author Saul Neri (N3R1XPL01T)
+		 */
+
+		 const $pokemon_card = document.getElementById('pokemon-card'),
+			   $change_poke_btn = document.getElementById('change-pokemon');
+		
+		 const randomChange = () => (Math.round(Math.random()*801));
+		 
+		 function MaysFirstChar(string) {
+			  return string.charAt(0).toUpperCase() + string.slice(1);
+		 }
+
+		 function iterTypes(pokemon_types) {
+			let types = [];
+			pokemon_types.forEach(t => {
+			   types.push((t.type.name).toUpperCase());
+			});
+			$pokemon_card.querySelector('p').innerHTML = `<h1>${types}</h1>`;
+		 }
+
+		 function getPokemonType(pkm_name) {
+			let url = `https://pokeapi.co/api/v2/pokemon/${pkm_name}`
+			fetch(url)
+			   .then(data => {
+				  data.json()
+					 .then(pokemon => {
+						iterTypes(pokemon.types);
+					 });
+			   });
+		 };
+
+		 function loadPokemonCard(name, img) {
+			$pokemon_card.querySelector('img').src = img;
+			$pokemon_card.querySelector('figcaption').innerHTML = `<h3>${MaysFirstChar(name)}</h3>`;
+			if (screen.width < 400 && screen.height < 600) {
+			   $pokemon_card.style.height = `50%`;$pokemon_card.style.width = `50%`;
+			   $pokemon_card.querySelector('figcaption').innerHTML = `<h1><big>${MaysFirstChar(name)}</big></h1>`;
+			   $pokemon_card.querySelector('img').style.height = `80%`;
+			   $pokemon_card.querySelector('img').style.width = `80%`;
+			   $change_poke_btn.style.padding = `1% 5% 1% 5%`;
+			   $change_poke_btn.innerHTML = `<h1>Change Pokemon</h1>`
+			} else {
+			   $pokemon_card.querySelector('figcaption').innerHTML = `<h1>${MaysFirstChar(name)}</h1>`;
+			   $pokemon_card.querySelector('img').style.height = `50%`;
+			   $pokemon_card.querySelector('img').style.width = `50%`;
+			   $change_poke_btn.style.padding = `0.5% 2.5% 0.5% 2.5%`;
+			   $change_poke_btn.innerHTML = `<h3>Change Pokemon</h3>`;
+			}
+		 };
+
+		 function getPokemonById(id) {
+			try {
+			   fetch(`https://pokeapi.co/api/v2/pokemon-form/${id}`)
+				  .then(data => {
+					 data.json()
+					 .then(pokemon => {
+						loadPokemonCard(pokemon.name, pokemon.sprites.front_shiny);
+						getPokemonType(pokemon.name);
+					 });
+				  });
+			} catch(e) {
+			   console.warn(`Error in function: getPokemonById =>`, e);
+			}
+		 };
+
+		 window.onload = function() {getPokemonById(randomChange())};
+		 
+		 $change_poke_btn.onclick = function() {getPokemonById(randomChange())};
+
+	  </script>
+   </body>
+</html>
